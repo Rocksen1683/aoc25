@@ -8,9 +8,9 @@ import (
 
 func main() {
 	lines, err := aoc.ReadInput("day01/input.txt")
-	fmt.Println(lines)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(Part1(lines))
+	fmt.Println("part 1:", Part1(lines))
+	fmt.Println("part 2:", Part2(lines))
 }
