@@ -8,3 +8,5 @@ bin/
 .idea/
 *.swp
 .DS_Store
+
+*/input.txt
