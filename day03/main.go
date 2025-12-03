@@ -11,5 +11,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("part 1:", sumOfMaxJoltage(lines))
+	pt1, pt2 := sumOfMaxJoltage(lines)
+	fmt.Println("part 1:", pt1)
+	fmt.Println("part 2:", pt2)
 }
