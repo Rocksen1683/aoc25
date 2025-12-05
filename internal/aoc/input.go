@@ -46,3 +46,16 @@ func ReadCommaInput(path string) ([]string, error) {
 	}
 	return lines, nil
 }
+
+func ReadInputAsMatrix(path string) ([][]int, error) {
+	lines, err := ReadInput(path)
+	if err != nil {
+		return nil, err
+	}
+
+	matrix := make([][]int, len(lines))
+	for i, line := range lines {
+		matrix[i] = make([]int, len(line))
+	}
+	return matrix, nil
+}
