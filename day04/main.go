@@ -13,4 +13,5 @@ func main() {
 	}
 	fmt.Println("rows:", len(matrix))
 	fmt.Println("cols:", len(matrix[0]))
+	fmt.Println("part 1:", numAdjPaperRolls(matrix))
 }

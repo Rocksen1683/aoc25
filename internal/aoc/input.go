@@ -47,15 +47,15 @@ func ReadCommaInput(path string) ([]string, error) {
 	return lines, nil
 }
 
-func ReadInputAsMatrix(path string) ([][]int, error) {
+func ReadInputAsMatrix(path string) ([][]string, error) {
 	lines, err := ReadInput(path)
 	if err != nil {
 		return nil, err
 	}
 
-	matrix := make([][]int, len(lines))
+	matrix := make([][]string, len(lines))
 	for i, line := range lines {
-		matrix[i] = make([]int, len(line))
+		matrix[i] = strings.Split(line, "")
 	}
 	return matrix, nil
 }
