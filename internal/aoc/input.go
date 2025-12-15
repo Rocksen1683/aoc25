@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -58,4 +59,36 @@ func ReadInputAsMatrix(path string) ([][]string, error) {
 		matrix[i] = strings.Split(line, "")
 	}
 	return matrix, nil
+}
+
+func ReadInputAsIntervals(path string) ([][2]int, []int, error) {
+	lines, err := ReadInput(path)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	intervals := make([][2]int, 0)
+	freshIDs := make([]int, 0)
+
+	for _, line := range lines {
+		if strings.Contains(line, "-") {
+			parts := strings.Split(line, "-")
+			start, err := strconv.Atoi(parts[0])
+			if err != nil {
+				return nil, nil, err
+			}
+			end, err := strconv.Atoi(parts[1])
+			if err != nil {
+				return nil, nil, err
+			}
+			intervals = append(intervals, [2]int{start, end})
+		} else {
+			id, err := strconv.Atoi(line)
+			if err != nil {
+				return nil, nil, err
+			}
+			freshIDs = append(freshIDs, id)
+		}
+	}
+	return intervals, freshIDs, nil
 }
