@@ -1,6 +1,6 @@
 package aoc
 
 type Cephalopod struct {
-	numbers   []int
-	operation string
+	Numbers   []int
+	Operation string
 }

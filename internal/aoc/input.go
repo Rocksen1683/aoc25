@@ -101,19 +101,26 @@ func ReadInputAsCephalopod(path string) ([]Cephalopod, error) {
 		return nil, err
 	}
 
-	cephalopods := make([]Cephalopod, len(lines[0]))
+	if len(lines) == 0 {
+		return nil, fmt.Errorf("no lines in input")
+	}
+
+	// Use Fields to handle multiple spaces and split properly
+	firstLineParts := strings.Fields(lines[0])
+	cephalopods := make([]Cephalopod, len(firstLineParts))
+
 	for lineIdx, line := range lines {
-		parts := strings.Split(line, " ")
-		idx := 0
-		for idx = 0; idx < len(parts); idx++ {
+		parts := strings.Fields(line)
+		for idx := 0; idx < len(parts); idx++ {
 			if lineIdx == len(lines)-1 {
-				cephalopods[idx].operation = parts[idx]
+				cephalopods[idx].Operation = parts[idx]
+			} else {
+				numbers, err := strconv.Atoi(parts[idx])
+				if err != nil {
+					return nil, err
+				}
+				cephalopods[idx].Numbers = append(cephalopods[idx].Numbers, numbers)
 			}
-			numbers, err := strconv.Atoi(parts[idx])
-			if err != nil {
-				return nil, err
-			}
-			cephalopods[idx].numbers = append(cephalopods[idx].numbers, numbers)
 		}
 	}
 	return cephalopods, nil
