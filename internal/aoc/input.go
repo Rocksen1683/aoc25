@@ -82,6 +82,8 @@ func ReadInputAsIntervals(path string) ([][2]int, []int, error) {
 				return nil, nil, err
 			}
 			intervals = append(intervals, [2]int{start, end})
+		} else if line == "" {
+			continue
 		} else {
 			id, err := strconv.Atoi(line)
 			if err != nil {
