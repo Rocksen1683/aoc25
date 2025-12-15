@@ -94,3 +94,27 @@ func ReadInputAsIntervals(path string) ([][2]int, []int, error) {
 	}
 	return intervals, freshIDs, nil
 }
+
+func ReadInputAsCephalopod(path string) ([]Cephalopod, error) {
+	lines, err := ReadInput(path)
+	if err != nil {
+		return nil, err
+	}
+
+	cephalopods := make([]Cephalopod, len(lines[0]))
+	for lineIdx, line := range lines {
+		parts := strings.Split(line, " ")
+		idx := 0
+		for idx = 0; idx < len(parts); idx++ {
+			if lineIdx == len(lines)-1 {
+				cephalopods[idx].operation = parts[idx]
+			}
+			numbers, err := strconv.Atoi(parts[idx])
+			if err != nil {
+				return nil, err
+			}
+			cephalopods[idx].numbers = append(cephalopods[idx].numbers, numbers)
+		}
+	}
+	return cephalopods, nil
+}
