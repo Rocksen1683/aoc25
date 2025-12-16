@@ -125,3 +125,113 @@ func ReadInputAsCephalopod(path string) ([]Cephalopod, error) {
 	}
 	return cephalopods, nil
 }
+
+func ReadInputAsCephalopodRightToLeft(path string) ([]Cephalopod, error) {
+	lines, err := ReadInput(path)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(lines) == 0 {
+		return nil, fmt.Errorf("no lines in input")
+	}
+
+	numDataLines := len(lines) - 1
+	if numDataLines == 0 {
+		return nil, fmt.Errorf("no data lines")
+	}
+
+	width := 0
+	for _, line := range lines {
+		if len(line) > width {
+			width = len(line)
+		}
+	}
+
+	// Pad all lines to equal width.
+	padded := make([]string, len(lines))
+	for i, line := range lines {
+		if len(line) < width {
+			line = line + strings.Repeat(" ", width-len(line))
+		}
+		padded[i] = line
+	}
+
+	dataLines := padded[:numDataLines]
+	opLine := padded[len(padded)-1]
+
+	type block struct {
+		cols []int 
+	}
+	var blocks []block
+
+	inBlock := false
+	current := block{}
+
+	for col := width - 1; col >= 0; col-- {
+		allSpace := opLine[col] == ' '
+		if allSpace {
+			for _, row := range dataLines {
+				if row[col] != ' ' {
+					allSpace = false
+					break
+				}
+			}
+		}
+
+		if allSpace {
+			if inBlock {
+				blocks = append(blocks, current)
+				current = block{}
+				inBlock = false
+			}
+			continue
+		}
+
+		if !inBlock {
+			inBlock = true
+		}
+		current.cols = append(current.cols, col)
+	}
+	if inBlock {
+		blocks = append(blocks, current)
+	}
+
+	cephalopods := make([]Cephalopod, 0, len(blocks))
+
+	for _, blk := range blocks {
+		var cp Cephalopod
+
+		for _, col := range blk.cols {
+			if opLine[col] != ' ' {
+				cp.Operation = string(opLine[col])
+				break
+			}
+		}
+		if cp.Operation == "" {
+			return nil, fmt.Errorf("missing operation for block with columns %v", blk.cols)
+		}
+
+		for _, col := range blk.cols {
+			var digits []byte
+			for _, row := range dataLines {
+				ch := row[col]
+				if ch >= '0' && ch <= '9' {
+					digits = append(digits, ch)
+				}
+			}
+			if len(digits) == 0 {
+				continue
+			}
+			num, err := strconv.Atoi(string(digits))
+			if err != nil {
+				return nil, fmt.Errorf("failed to parse number in column %d: %v", col, err)
+			}
+			cp.Numbers = append(cp.Numbers, num)
+		}
+
+		cephalopods = append(cephalopods, cp)
+	}
+
+	return cephalopods, nil
+}

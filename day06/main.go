@@ -12,9 +12,11 @@ func main() {
 		panic(err)
 	}
 
-	for _, cephalopod := range cephalopods {
-		fmt.Println(cephalopod.Numbers)
-		fmt.Println(cephalopod.Operation)
+	rightToLeftCephalopods, err := aoc.ReadInputAsCephalopodRightToLeft("day06/input.txt")
+	if err != nil {
+		panic(err)
 	}
 
+	fmt.Println("part 1:", calculateCephalopod(cephalopods))
+	fmt.Println("part 2:", calculateCephalopod(rightToLeftCephalopods))
 }
