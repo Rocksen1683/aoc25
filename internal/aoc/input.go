@@ -160,59 +160,28 @@ func ReadInputAsCephalopodRightToLeft(path string) ([]Cephalopod, error) {
 	dataLines := padded[:numDataLines]
 	opLine := padded[len(padded)-1]
 
-	type block struct {
-		cols []int 
-	}
-	var blocks []block
-
-	inBlock := false
-	current := block{}
-
+	// Locate every operator column from right-to-left; each operator marks the
+	// start of a problem whose columns extend to the next operator (or the
+	// right edge).
+	var opCols []int
 	for col := width - 1; col >= 0; col-- {
-		allSpace := opLine[col] == ' '
-		if allSpace {
-			for _, row := range dataLines {
-				if row[col] != ' ' {
-					allSpace = false
-					break
-				}
-			}
+		if ch := opLine[col]; ch == '+' || ch == '*' {
+			opCols = append(opCols, col)
 		}
-
-		if allSpace {
-			if inBlock {
-				blocks = append(blocks, current)
-				current = block{}
-				inBlock = false
-			}
-			continue
-		}
-
-		if !inBlock {
-			inBlock = true
-		}
-		current.cols = append(current.cols, col)
 	}
-	if inBlock {
-		blocks = append(blocks, current)
+	if len(opCols) == 0 {
+		return nil, fmt.Errorf("no operations found in %s", path)
 	}
 
-	cephalopods := make([]Cephalopod, 0, len(blocks))
+	cephalopods := make([]Cephalopod, 0, len(opCols))
 
-	for _, blk := range blocks {
-		var cp Cephalopod
-
-		for _, col := range blk.cols {
-			if opLine[col] != ' ' {
-				cp.Operation = string(opLine[col])
-				break
-			}
-		}
-		if cp.Operation == "" {
-			return nil, fmt.Errorf("missing operation for block with columns %v", blk.cols)
+	rightBound := width
+	for _, opCol := range opCols {
+		cp := Cephalopod{
+			Operation: string(opLine[opCol]),
 		}
 
-		for _, col := range blk.cols {
+		for col := opCol; col < rightBound; col++ {
 			var digits []byte
 			for _, row := range dataLines {
 				ch := row[col]
@@ -223,14 +192,20 @@ func ReadInputAsCephalopodRightToLeft(path string) ([]Cephalopod, error) {
 			if len(digits) == 0 {
 				continue
 			}
+
 			num, err := strconv.Atoi(string(digits))
 			if err != nil {
-				return nil, fmt.Errorf("failed to parse number in column %d: %v", col, err)
+				return nil, fmt.Errorf("failed to parse number at column %d: %v", col, err)
 			}
 			cp.Numbers = append(cp.Numbers, num)
 		}
 
+		if len(cp.Numbers) == 0 {
+			return nil, fmt.Errorf("no numbers found for operator at column %d", opCol)
+		}
+
 		cephalopods = append(cephalopods, cp)
+		rightBound = opCol
 	}
 
 	return cephalopods, nil
